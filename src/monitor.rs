@@ -6,19 +6,24 @@ pub struct Monitor {
     blackout: bool,
     input: String, // this can change so it goes into config
     monitor_name: String,
+    command: String,
 }
 
 impl Monitor {
     pub fn new() -> Self {
-        let monitor_name = Config::new().data.monitor_name;
+        let conf = Config::new();
+
+        let monitor_name = conf.data.monitor_name;
+        let command = conf.data.lunar_command;
         if monitor_name == "" {
             panic!("No monitor specified!");
         }
-        let input = get_display_input(monitor_name.clone());
+        let input = get_display_input(monitor_name.clone(), command.clone());
         return Self {
             blackout: false,
             input,
             monitor_name,
+            command,
         };
     }
     pub fn turn_off(&mut self) {
@@ -41,7 +46,7 @@ impl Monitor {
     }
 
     fn set_display_input(&mut self, value: String) {
-        Command::new("lunar")
+        Command::new(&self.command)
             .arg("displays")
             .arg(self.monitor_name.clone())
             .arg("input")
@@ -52,7 +57,7 @@ impl Monitor {
 
     fn set_blackout(&mut self, value: bool) {
         let value_str = value.to_string();
-        Command::new("lunar")
+        Command::new(&self.command)
             .arg("displays")
             .arg(self.monitor_name.clone())
             .arg("blackout")
@@ -61,8 +66,8 @@ impl Monitor {
             .expect("Failed to execute command");
     }
 }
-fn get_display_input(monitor_name: String) -> String {
-    let value = Command::new("lunar")
+fn get_display_input(monitor_name: String, command: String) -> String {
+    let value = Command::new(command)
         .arg("displays")
         .arg(monitor_name)
         .arg("input")

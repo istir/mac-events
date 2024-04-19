@@ -10,6 +10,7 @@ use std::{
 pub struct JsonConfig {
     pub monitor_name: String,
     pub device_ids: DeviceIds,
+    pub lunar_command: String,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -78,6 +79,7 @@ impl Config {
         let empty_data = JsonConfig {
             monitor_name: String::new(),
             device_ids: DeviceIds { hex: Vec::new() },
+            lunar_command: "lunar".to_string(),
         };
         let data =
             serde_json::to_string_pretty(&empty_data).expect("Failed to serialize empty config");
