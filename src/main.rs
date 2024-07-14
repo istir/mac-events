@@ -1,4 +1,5 @@
 pub mod config;
+pub mod mirror;
 pub mod monitor;
 pub mod usb;
 

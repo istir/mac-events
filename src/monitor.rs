@@ -1,6 +1,6 @@
 use std::process::Command;
 
-use crate::config::Config;
+use crate::{config::Config, mirror};
 
 pub struct Monitor {
     blackout: bool,
@@ -12,19 +12,19 @@ pub struct Monitor {
 impl Monitor {
     pub fn new() -> Self {
         let conf = Config::new();
-
+        mirror::copy_binary();
         let monitor_name = conf.data.monitor_name;
         let command = conf.data.lunar_command;
-        if monitor_name == "" {
+        if monitor_name.is_empty() {
             panic!("No monitor specified!");
         }
         let input = get_display_input(monitor_name.clone(), command.clone());
-        return Self {
+        Self {
             blackout: false,
             input,
             monitor_name,
             command,
-        };
+        }
     }
     pub fn turn_off(&mut self) {
         self.blackout = true;
@@ -36,6 +36,7 @@ impl Monitor {
         self.blackout = false;
         self.input = "DisplayPort1".to_string();
         self.set();
+        mirror::execute();
     }
 
     fn set(&mut self) {
@@ -64,6 +65,12 @@ impl Monitor {
             .arg(&value_str)
             .output()
             .expect("Failed to execute command");
+    }
+}
+
+impl Default for Monitor {
+    fn default() -> Self {
+        Self::new()
     }
 }
 fn get_display_input(monitor_name: String, command: String) -> String {

@@ -34,21 +34,25 @@ where
     }
     return Ok(response);
 }
+
 pub struct Config {
     pub data: JsonConfig,
     pub config_path: PathBuf,
+    pub config_folder_path: PathBuf,
 }
 
 impl Config {
     pub fn new() -> Self {
         let config_dir = config_dir().expect("Failed to get config dir");
-        let file_path = Path::new(&config_dir).join("MacEvents/config.json");
+        let config_folder_path = Path::new(&config_dir).join("MacEvents");
+        let file_path = Path::new(&config_folder_path).join("config.json");
 
         println!("Config path: {}", file_path.to_str().expect("as"));
         let config_data = Config::read_config_file(file_path.clone()).expect("No config");
 
         let instance = Self {
             config_path: file_path,
+            config_folder_path,
             data: config_data,
         };
 
